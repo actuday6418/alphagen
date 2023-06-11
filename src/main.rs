@@ -20,21 +20,22 @@ fn main() {
     pretty_env_logger::init();
     let args = Args::parse();
 
-    // Verify file paths
-    for input in &args.input_location {
-        if !input.exists() {
-            warn!("Input file '{}' does not exist", input.display());
-        }
-    }
-
     let out = args.output_location;
-    if !(out.exists() && out.is_dir()) {
+    if !out.is_dir() {
         std::fs::create_dir_all(&out).expect("Could not create output directory!")
     }
+
     let paths = args
         .input_location
         .iter()
-        .filter(|p| p.exists())
+        .filter(|p| {
+            if p.is_file() {
+                true
+            } else {
+                warn!("{} is not a valid file path. Skipping.", p.display());
+                false
+            }
+        })
         .collect::<Vec<_>>();
     if paths.is_empty() {
         panic!("No valid input file paths!")
