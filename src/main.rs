@@ -53,7 +53,7 @@ fn main() {
         for pixel in file.pixels() {
             let p = pixs.next().unwrap();
             p.0[0] = pixel.2[3];
-            p.0[1] = 255;
+            p.0[1] = pixel.2[3];
         }
         output_image_buff
             .write_to(fout, image::ImageFormat::Png)
