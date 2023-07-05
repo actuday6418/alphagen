@@ -1,8 +1,10 @@
 use image::io::Reader;
 use image::GenericImageView;
+use image::ImageFormat;
 use rayon::iter::ParallelBridge;
 use rayon::iter::ParallelIterator;
 use std::fs;
+use std::io::BufWriter;
 use std::io::Cursor;
 use std::path::PathBuf;
 
@@ -41,5 +43,7 @@ pub fn on_raw(input: &[u8]) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
         p.0[0] = alpha_channel[3];
         p.0[1] = alpha_channel[3];
     }
-    Ok(img_out.into_raw())
+    let mut writer = BufWriter::new(Cursor::new(Vec::new()));
+    img_out.write_to(&mut writer, ImageFormat::Png)?;
+    Ok(writer.into_inner()?.into_inner())
 }
